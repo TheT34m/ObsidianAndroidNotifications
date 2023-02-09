@@ -1,4 +1,4 @@
-package com.obsidian.plugins.task_notifier
+package com.obsidian.plugins.task_notifier.utils
 
 import android.util.Log
 

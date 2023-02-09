@@ -1,9 +1,10 @@
-package com.obsidian.plugins.task_notifier
+package com.obsidian.plugins.task_notifier.os
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.net.Uri
+import com.obsidian.plugins.task_notifier.utils.Logger
 
 class PersistenceManager {
     companion object {
