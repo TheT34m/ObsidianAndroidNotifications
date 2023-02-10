@@ -9,6 +9,7 @@ import android.os.IBinder
 import androidx.documentfile.provider.DocumentFile
 import com.obsidian.plugins.task_notifier.core.ObsidianTaskReminderCore
 import com.obsidian.plugins.task_notifier.core.OnFileChangedResult
+import com.obsidian.plugins.task_notifier.utils.FileUtils
 import com.obsidian.plugins.task_notifier.utils.Logger
 
 import java.io.BufferedReader
@@ -18,6 +19,8 @@ import java.io.InputStreamReader
 
 class FileObserverService : Service() {
     private var mFileObserver: FileObserver? = null
+    private var filePath: String? = null;
+    private var fileUri: Uri? = null;
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Logger.info("FileObserverService.onStartCommand")
@@ -29,8 +32,8 @@ class FileObserverService : Service() {
         }
         Logger.info("FileObserverService started for uri ${uriString}")
         val uri = Uri.parse(uriString);
-
-        mFileObserver = getFileObserver(context, uriString)
+        fileUri = uri;
+        mFileObserver = getFileObserver(context, uri)
         (mFileObserver as FileObserver).startWatching() // The FileObserver starts watching
         return START_STICKY
     }
@@ -50,20 +53,21 @@ class FileObserverService : Service() {
         Logger.info("FileObserverService.onDestroy")
     }
 
-    private fun getFileObserver(context: Context, uri: String): FileObserver {
-        Logger.info("FileObserverService created for file: ${uri} ")
-        return object : FileObserver(uri, ALL_EVENTS) {
+    private fun getFileObserver(context: Context, uri: Uri): FileObserver {
+        val realPath = FileUtils().getPath(context, uri)
+        Logger.info("FileObserverService created for file: ${realPath} ")
+        filePath = realPath;
+        return object : FileObserver(File(realPath)) {
             override fun onEvent(event: Int, path: String?) {
-                Logger.info("FileObserverService.onEvent")
-                if (path == null) return
-                if (event != MODIFY) return
-                Logger.info("FileObserverService on event $event path $path")
+                if (realPath == null) return
+                if (event != FileObserver.MODIFY) return
+                Logger.info("FileObserverService.onEvent ${event} path: ${realPath}")
 
-                var changeContent = tryReadFileContent(context, path)
+                var changeContent = tryReadFileContent(context, fileUri!!)
 
                 val fileChangeACKResult = ObsidianTaskReminderCore.onFileChanged(
                     context,
-                    path,
+                    fileUri!!,
                     changeContent
                 )
                 if (fileChangeACKResult === OnFileChangedResult.STOP_LISTENING) {
@@ -74,7 +78,22 @@ class FileObserverService : Service() {
         }
     }
 
-    private fun tryReadFileContent(context: Context, path: String): String {
+    private fun tryReadFileContent(context: Context, uri: Uri): String {
+        var result = "";
+        val fis = context.contentResolver.openInputStream(uri)
+        val isr = InputStreamReader(fis)
+        val bufferedReader = BufferedReader(isr)
+        val sb = StringBuilder()
+        var line: String?
+        while (bufferedReader.readLine().also { line = it } != null) {
+            sb.append(line)
+        }
+        fis!!.close()
+        result = sb.toString()
+        return result;
+    }
+
+    private fun tryReadDirContent(context: Context, path: String): String {
         var result = ""
         try {
             val uri = Uri.parse(path)
