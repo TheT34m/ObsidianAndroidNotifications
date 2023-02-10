@@ -15,6 +15,9 @@ class ServiceManager {
         }
 
         private fun startService(context: Context, path: String) {
+            if (path.isNullOrEmpty()) {
+                return
+            }
             Logger.info("ServiceManager starting FileObserverService for path $path");
             val myIntent = Intent(context, FileObserverService::class.java)
             myIntent.putExtra(FILE_PATH_INTENT_KEY, path)
