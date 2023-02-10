@@ -44,47 +44,26 @@ class PermissionManager {
             context: Context,
             requestCode: Int,
             resultCode: Int,
-            data: Intent?
+            intent: Intent?
         ) {
             if (resultCode != RESULT_OK || requestCode != STORAGE_PERMISSION_REQUEST_CODE) {
                 Logger.info("Permission manager not processing intent resultCode $resultCode requestCode: $requestCode")
                 return;
             }
-            if (data == null) {
-                Logger.info("PermissionManager intent is empty")
+            if (intent == null || intent.data == null) {
+                Logger.info("PermissionManager intent is empty or intent.data is empty")
                 return
             }
-            data.data?.let { treeUri ->
-                context.contentResolver.takePersistableUriPermission(
-                    treeUri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-                readSDK30(context, treeUri)
-            }
+            val contentResolver = context.contentResolver
+            val fileUri = intent.data;
+            val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            contentResolver.takePersistableUriPermission(fileUri!!, takeFlags)
+
+            ObsidianTaskReminderCore.onWatchedPathAdded(context, fileUri)
+
         }
 
-        private fun readSDK30(context: Context, treeUri: Uri) {
-            val tree = DocumentFile.fromTreeUri(context, treeUri)!!
 
-            thread {
-                val uriList = arrayListOf<Uri>()
-                listFiles(tree).forEach { uri ->
-                    ObsidianTaskReminderCore.onWatchedPathAdded(context, uri)
-                    // Collect all the Uri from here
-                }
-
-            }
-        }
-
-        private fun listFiles(folder: DocumentFile): List<Uri> {
-            return if (folder.isDirectory) {
-                folder.listFiles().mapNotNull { file ->
-                    if (file.name != null) file.uri else null
-                }
-            } else {
-                emptyList()
-            }
-        }
     }
 }

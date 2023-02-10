@@ -22,7 +22,7 @@ class PersistenceManager {
                 Logger.info("addWatchedFolder got newFolder.path as null!")
                 return
             }
-            val newPath: String = newFolder.path!!.trim()
+            val newPath: String = newFolder.toString()
             if (folders.contains(newPath)) {
                 Logger.info("Folder ${newPath} is already watched folder")
                 return

@@ -28,23 +28,15 @@ class MainActivity : AppCompatActivity() {
         PermissionManager.onActivityResult(this, requestCode, resultCode, data)
     }
 
-    fun addFolderButtonClick(view: View) {
-        getWatchedFolder();
+    fun addObsidianReminderConfig(view: View) {
+        selectFolder()
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    public fun getWatchedFolder() {
-        val storageManager = application.getSystemService(Context.STORAGE_SERVICE) as StorageManager
-        val intent = storageManager.primaryStorageVolume.createOpenDocumentTreeIntent()
-
-        val targetDirectory =
-            "WhatsApp%2FMedia%2F.Statuses" // add your directory to be selected by the user
-        var uri = intent.getParcelableExtra<Uri>("android.provider.extra.INITIAL_URI") as Uri
-        var scheme = uri.toString()
-        scheme = scheme.replace("/root/", "/document/")
-        scheme += "%3A$targetDirectory"
-        uri = Uri.parse(scheme)
-        intent.putExtra("android.provider.extra.INITIAL_URI", uri)
+    fun selectFolder() {
+         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+        }
         startActivityForResult(intent, 1)
     }
 }
