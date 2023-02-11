@@ -5,11 +5,16 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.net.Uri
 import com.obsidian.plugins.task_notifier.utils.Logger
+import java.util.stream.Collectors
+
+
+
 
 class PersistenceManager {
     companion object {
         private val STORE_NAME = "Obsidian.Task.Reminder"
         private val KEY_WATCHED_FOLDERS = "WATCHED_FOLDERS"
+        private val ACTIVE_ALERTS = "ACTIVE_ALERTS"
         private val SEPARATOR = "$&$"
 
         fun getWatchedFolders(context: Context): List<String> {
@@ -46,5 +51,18 @@ class PersistenceManager {
         private fun getStore(context: Context): SharedPreferences {
             return context.getSharedPreferences(STORE_NAME, MODE_PRIVATE);
         }
+
+      fun addActiveAlerts(context: Context, reqIds: List<Int>) {
+        val editor: SharedPreferences.Editor = getStore(context).edit()
+        editor.putString(ACTIVE_ALERTS, reqIds.joinToString(SEPARATOR))
+        editor.commit()
+      }
+
+      fun getActiveAlerts(context: Context): List<Int> {
+        val value = getStore(context).getString(ACTIVE_ALERTS, "")
+        if (value == "" || value == null) return emptyList();
+        Logger.info("PersistenceManager.getActiveAlerts ids: $value")
+        return value!!.split(SEPARATOR).map { it.toInt() };
+      }
     }
 }

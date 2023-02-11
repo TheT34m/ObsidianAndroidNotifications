@@ -20,7 +20,7 @@ class NotificationManager {
             notificationManager.notify(reqId, notification)
         }
 
-      fun createNotification(context: Context, title: String, text: String, hashCode: Int): Notification {
+      fun createNotification(context: Context, title: String, text: String): Notification {
         val builder: NotificationCompat.Builder =
           NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_background)
