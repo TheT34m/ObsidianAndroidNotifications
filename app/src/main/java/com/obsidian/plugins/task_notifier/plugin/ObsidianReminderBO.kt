@@ -1,8 +1,8 @@
 package com.obsidian.plugins.task_notifier.plugin
 
-import java.util.*
+import java.time.LocalDateTime
 
 data class ObsidianReminderBO(
-    var title: String,
-    var time: Date,
+  var title: String,
+  var time: LocalDateTime?,
 )
