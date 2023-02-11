@@ -92,30 +92,4 @@ class FileObserverService : Service() {
         result = sb.toString()
         return result;
     }
-
-    private fun tryReadDirContent(context: Context, path: String): String {
-        var result = ""
-        try {
-            val uri = Uri.parse(path)
-            val document = DocumentFile.fromTreeUri(context, uri)
-            for (file in document!!.listFiles()) {
-                if (!file.isFile) continue
-                if (!file.name!!.contains(path)) continue
-                val fis = context.contentResolver.openInputStream(file.uri)
-                val isr = InputStreamReader(fis)
-                val bufferedReader = BufferedReader(isr)
-                val sb = StringBuilder()
-                var line: String?
-                while (bufferedReader.readLine().also { line = it } != null) {
-                    sb.append(line)
-                }
-                fis!!.close()
-                result = sb.toString()
-            }
-        } catch (e: IOException) {
-            Logger.info("FileObserverService cannot read file content $path e: $e")
-            e.printStackTrace()
-        }
-        return result
-    }
 }
