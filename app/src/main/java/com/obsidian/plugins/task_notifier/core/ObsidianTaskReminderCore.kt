@@ -2,6 +2,7 @@ package com.obsidian.plugins.task_notifier.core
 
 import android.content.Context
 import android.net.Uri
+import com.obsidian.plugins.task_notifier.os.AlertManager
 import com.obsidian.plugins.task_notifier.os.NotificationManager
 import com.obsidian.plugins.task_notifier.os.PersistenceManager
 import com.obsidian.plugins.task_notifier.os.ServiceManager
@@ -28,6 +29,7 @@ class ObsidianTaskReminderCore {
                 return OnFileChangedResult.STOP_LISTENING;
             }*/
             val reminders = ObsidianPluginManager.processFile(content)
+            AlertManager().syncNotifications(context, reminders);
             return OnFileChangedResult.ACK;
         }
 

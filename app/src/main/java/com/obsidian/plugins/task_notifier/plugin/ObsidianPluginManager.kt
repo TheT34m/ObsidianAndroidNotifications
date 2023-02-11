@@ -29,8 +29,8 @@ class ObsidianPluginManager {
     }
 
     @JvmStatic
-    fun processFile(json: String): List<ObsidianReminderBO> {
-      val result: List<ObsidianReminderBO> = emptyList();
+    fun processFile(json: String): ArrayList<ObsidianReminderBO> {
+      val result: ArrayList<ObsidianReminderBO> = ArrayList();
       val gson = GsonBuilder().registerTypeAdapter(
         LocalDateTime::class.java,
         JsonDeserializer<Any?> { json, typeOfT, context ->
@@ -44,7 +44,7 @@ class ObsidianPluginManager {
       obsidianConfig.reminders?.entries?.forEach { it ->
           it.value?.forEach { reminder ->
             if (reminder?.title != null) {
-              result.plus(ObsidianReminderBO(reminder.title!!, reminder.time))
+              result.add(ObsidianReminderBO(reminder.title!!, reminder.time))
             };
           }
       }
