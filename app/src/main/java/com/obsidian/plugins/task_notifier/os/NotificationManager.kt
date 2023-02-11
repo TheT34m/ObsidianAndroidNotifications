@@ -1,5 +1,6 @@
 package com.obsidian.plugins.task_notifier.os
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -12,18 +13,23 @@ class NotificationManager {
     companion object {
         var NOTIFICATION_CHANNEL_ID = "OBSIDIAN_TASK_NOTIFICATIONS_ID"
 
-        fun notify(context: Context, title: String, text: String) {
+      @JvmStatic fun notify(context: Context, title: String, text: String, reqId: Int = 1) {
             this.ensureNotificationChannelExists(context);
-            val builder: NotificationCompat.Builder =
-                NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_launcher_background)
-                    .setContentTitle(title)
-                    .setContentText(text)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
+            val notification = this.createNotification(context, title, text);
             val notificationManager = NotificationManagerCompat.from(context)
-            notificationManager.notify(1, builder.build()) //id:1 wont be ok TODO
+            notificationManager.notify(reqId, notification)
         }
+
+      fun createNotification(context: Context, title: String, text: String, hashCode: Int): Notification {
+        val builder: NotificationCompat.Builder =
+          NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        return builder.build();
+      }
 
         private fun ensureNotificationChannelExists(context: Context) {
             // Create the NotificationChannel, but only on API 26+ because
