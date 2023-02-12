@@ -12,20 +12,23 @@ import java.util.*
 
 
 class AlertManager {
-  public fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
-    cancelAllNotifications(context);
-    val reqIds = createNotifications(context, reminders);
+  fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
+    cancelAllNotifications(context)
+    val reqIds = createNotifications(context, reminders)
     PersistenceManager.addActiveAlerts(context, reqIds)
   }
 
-  private fun createNotifications(context: Context, reminders: List<ObsidianReminderBO>): List<Int> {
-    val reqIds: ArrayList<Int> = ArrayList();
+  private fun createNotifications(
+    context: Context,
+    reminders: List<ObsidianReminderBO>
+  ): List<Int> {
+    val reqIds: ArrayList<Int> = ArrayList()
     reminders.forEach { reminder ->
-      val reqId = UUID.randomUUID().hashCode();
+      val reqId = UUID.randomUUID().hashCode()
       createNotification(context, reminder, reqId)
-      reqIds.add(reqId);
+      reqIds.add(reqId)
     }
-    return reqIds;
+    return reqIds
   }
 
   private fun createNotification(context: Context, reminderBO: ObsidianReminderBO, reqId: Int) {
@@ -37,11 +40,15 @@ class AlertManager {
     val notificationIntent = Intent(context, AlertBroadcast::class.java)
     notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, reqId)
     notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TEXT, reminderBO.title)
-    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TITLE,  reminderBO.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))) // TODO: fix notification message
-    val pendingIntent = PendingIntent.getBroadcast(context, reqId, notificationIntent, PendingIntent.FLAG_MUTABLE);
+    notificationIntent.putExtra(
+      AlertBroadcast.NOTIFICATION_TITLE,
+      reminderBO.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    ) // TODO: fix notification message
+    val pendingIntent =
+      PendingIntent.getBroadcast(context, reqId, notificationIntent, PendingIntent.FLAG_MUTABLE)
 
     val alarmManager = (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?)!!
-    alarmManager.set(AlarmManager.RTC_WAKEUP , calendar.timeInMillis , pendingIntent) ;
+    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
   }
 
   private fun cancelAllNotifications(context: Context) {
@@ -49,7 +56,8 @@ class AlertManager {
     reqIds.forEach {
       val notificationIntent = Intent(context, AlertBroadcast::class.java)
       notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, it)
-      val pendingIntent = PendingIntent.getBroadcast(context, it, notificationIntent, PendingIntent.FLAG_MUTABLE);
+      val pendingIntent =
+        PendingIntent.getBroadcast(context, it, notificationIntent, PendingIntent.FLAG_MUTABLE)
       pendingIntent.cancel()
     }
     // reset the list
