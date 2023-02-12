@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+env:
+  GIT_TAG: v${{ env.GITHUB_RUN_NUMBER }}.${{ env.GITHUB_RUN_ID }}
+
+jobs:
+  release:
+    name: Release job
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Determine next version
+        id: determine-version
+        uses: actions/bin/filter@v1
+        with:
+          args: conventional-changelog -p angular -i CHANGELOG.md -s
+
+      - name: Write version to AndroidManifest.xml
+        uses: actions/bin/filter@v1
+        with:
+          args: echo "Updating version to ${{ steps.determine-version.outputs.version }} in AndroidManifest.xml"
+          shell: bash
+
+      - name: Generate change log
+        uses: actions/bin/filter@v1
+        with:
+          args: conventional-changelog -p angular -i CHANGELOG.md -u
+          shell: bash
+
+      - name: Commit changes
+        uses: actions/bin/filter@v1
+        with:
+          args: 'git commit -am "chore(release): version ${{ env.GIT_TAG }}"'
+          shell: bash
+
+      - name: Create tag
+        uses: actions/bin/filter@v1
+        with:
+          args: git tag ${{ env.GIT_TAG }}
+          shell: bash
+
+      - name: Push changes
+        uses: actions/bin/filter@v1
+        with:
+          args: git push origin ${{ env.GIT_TAG }}
+          shell: bash
