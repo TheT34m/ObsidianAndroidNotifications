@@ -18,8 +18,8 @@ class FileObserverService : Service() {
   val CHANNEL_ID = "ForegroundServiceChannel"
   var NOTIFICATION_CHANNEL_ID = "OBSIDIAN_TASK_NOTIFICATIONS_ID"
   private var mFileObserver: FileObserver? = null
-  private var filePath: String? = null;
-  private var fileUri: Uri? = null;
+  private var filePath: String? = null
+  private var fileUri: Uri? = null
 
   override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
     Logger.info("FileObserverService.onStartCommand")
@@ -27,13 +27,13 @@ class FileObserverService : Service() {
     val uriString = intent.getStringExtra(ServiceManager.FILE_PATH_INTENT_KEY)
     if (uriString == null) {
       Logger.info("FileObserverService missing path from FILE_PATH_INTENT_KEY intent key")
-      return STOP_FOREGROUND_REMOVE;
+      return STOP_FOREGROUND_REMOVE
     }
-    createForeGroundNotification(context);
+    createForeGroundNotification(context)
 
     Logger.info("FileObserverService started for uri ${uriString}")
-    val uri = Uri.parse(uriString);
-    fileUri = uri;
+    val uri = Uri.parse(uriString)
+    fileUri = uri
     mFileObserver = getFileObserver(context, uri)
     (mFileObserver as FileObserver).startWatching() // The FileObserver starts watching
     return START_STICKY
@@ -57,7 +57,7 @@ class FileObserverService : Service() {
   private fun getFileObserver(context: Context, uri: Uri): FileObserver {
     val realPath = FileUtils().getPath(context, uri)
     Logger.info("FileObserverService created for file: ${realPath} ")
-    filePath = realPath;
+    filePath = realPath
     return object : FileObserver(File(realPath), FileObserver.CLOSE_WRITE) {
       override fun onEvent(event: Int, path: String?) {
         Logger.info("FileObserverService.onEvent ${event} path: ${realPath}")
@@ -78,7 +78,7 @@ class FileObserverService : Service() {
   }
 
   private fun tryReadFileContent(context: Context, uri: Uri): String {
-    var result = "";
+    var result = ""
     val fis = context.contentResolver.openInputStream(uri)
     val isr = InputStreamReader(fis)
     val bufferedReader = BufferedReader(isr)
@@ -89,7 +89,7 @@ class FileObserverService : Service() {
     }
     fis!!.close()
     result = sb.toString()
-    return result;
+    return result
   }
 
 
@@ -99,7 +99,7 @@ class FileObserverService : Service() {
       "Obisidian Reminder running",
       "background",
       1
-    );
+    )
     startForeground(1, notification)
   }
 }

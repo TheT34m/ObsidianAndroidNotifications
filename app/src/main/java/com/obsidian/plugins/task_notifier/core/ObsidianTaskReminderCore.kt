@@ -14,8 +14,8 @@ class ObsidianTaskReminderCore {
     @JvmStatic
     fun init(context: Context) {
       Logger.info("ObsidianTaskReminderCore.init")
-      val folders = PersistenceManager.getWatchedFolders(context);
-      ServiceManager.ensureAllPathsAreWatched(context, folders);
+      val folders = PersistenceManager.getWatchedFolders(context)
+      ServiceManager.ensureAllPathsAreWatched(context, folders)
     }
 
     @JvmStatic
@@ -23,22 +23,22 @@ class ObsidianTaskReminderCore {
       Logger.info("ObsidianTaskReminderCore.onFileChanged path: ${uri.path} content: $content")
       NotificationManager.notify(context, "file changed at", "path ${uri.path}")
 
-      val folders = PersistenceManager.getWatchedFolders(context);
+      val folders = PersistenceManager.getWatchedFolders(context)
       if (!folders.contains(uri.toString())) return OnFileChangedResult.STOP_LISTENING
 
       val reminders = ObsidianPluginManager.processFile(content)
-      AlertManager().syncNotifications(context, reminders);
-      return OnFileChangedResult.ACK;
+      AlertManager().syncNotifications(context, reminders)
+      return OnFileChangedResult.ACK
     }
 
     @JvmStatic
     fun onWatchedPathAdded(context: Context, uri: Uri) {
       Logger.info("ObsidianTaskReminderCore.onWatchedPathAdded")
-      if (!ObsidianPluginManager.isInterestedFile(uri)) return;
+      if (!ObsidianPluginManager.isInterestedFile(uri)) return
 
       NotificationManager.notify(context, "folder added", "path ${uri.path}")
       PersistenceManager.addWatchedFolder(uri, context)
-      val folders = PersistenceManager.getWatchedFolders(context);
+      val folders = PersistenceManager.getWatchedFolders(context)
       ServiceManager.ensureAllPathsAreWatched(context, folders)
     }
   }
