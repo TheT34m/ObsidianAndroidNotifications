@@ -15,7 +15,7 @@ class AlertManager {
   public fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
     cancelAllNotifications(context);
     val reqIds = createNotifications(context, reminders);
-    save(context, reqIds)
+    PersistenceManager.addActiveAlerts(context, reqIds)
   }
 
   private fun createNotifications(context: Context, reminders: List<ObsidianReminderBO>): List<Int> {
@@ -54,9 +54,5 @@ class AlertManager {
     }
     // reset the list
     PersistenceManager.addActiveAlerts(context, ArrayList())
-  }
-
-  private fun save(context: Context, reqIds: List<Int>) {
-    PersistenceManager.addActiveAlerts(context, reqIds)
   }
 }
