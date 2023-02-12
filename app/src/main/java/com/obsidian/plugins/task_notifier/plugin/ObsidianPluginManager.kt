@@ -1,15 +1,11 @@
 package com.obsidian.plugins.task_notifier.plugin
 
 import android.net.Uri
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
+import com.google.gson.*
 import com.obsidian.plugins.task_notifier.plugin.dto.v1.ObsidianReminderPluginConfigDTO
+import com.obsidian.plugins.task_notifier.plugin.dto.v1.ObsidianReminderPluginDate
 import com.obsidian.plugins.task_notifier.utils.Logger
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.*
 
 class ObsidianPluginManager {
   companion object {
@@ -30,21 +26,26 @@ class ObsidianPluginManager {
 
     @JvmStatic
     fun processFile(json: String): ArrayList<ObsidianReminderBO> {
-      val result: ArrayList<ObsidianReminderBO> = ArrayList();
-      val gson = GsonBuilder().registerTypeAdapter(
-        LocalDateTime::class.java,
-        JsonDeserializer<Any?> { json, typeOfT, context ->
-          LocalDateTime.parse(
-            json.asString,
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-          )
-        }).create()
+      // get configs
+      val jsonObject = Gson().fromJson(json, com.google.gson.JsonObject::class.java)
+      val remindersObject = jsonObject.getAsJsonObject("settings")
+      val dateTimeFormat = "YYYY-MM-DD HH:mm"
+      val reminderTime = remindersObject["reminderTime"].asString
+
+      val gson = GsonBuilder()
+        .registerTypeAdapter(
+          ObsidianReminderPluginDate::class.java,
+          JsonDeserializer<Any?> { json, typeOfT, context ->
+            ObsidianReminderPluginDate(json.asString, dateTimeFormat, reminderTime)
+          }).create()
+
       val obsidianConfig: ObsidianReminderPluginConfigDTO = gson.fromJson(json, ObsidianReminderPluginConfigDTO::class.java)
+      val result: ArrayList<ObsidianReminderBO> = ArrayList();
 
       obsidianConfig.reminders?.entries?.forEach { it ->
           it.value?.forEach { reminder ->
             if (reminder?.title != null) {
-              result.add(ObsidianReminderBO(reminder.title!!, reminder.time))
+              result.add(ObsidianReminderBO(reminder.title, reminder.time.dateTime))
             };
           }
       }

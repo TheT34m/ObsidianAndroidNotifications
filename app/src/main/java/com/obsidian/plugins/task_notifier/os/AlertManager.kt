@@ -5,8 +5,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class AlertManager {
   public fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
@@ -26,14 +29,15 @@ class AlertManager {
   }
 
   private fun createNotification(context: Context, reminderBO: ObsidianReminderBO, reqId: Int) {
-    val calendar: Calendar = Calendar.getInstance()
-    calendar.timeInMillis = System.currentTimeMillis()
-    calendar.set(Calendar.HOUR_OF_DAY, reminderBO.time?.hour ?: 9) // TODO: get default day configuration
-    calendar.set(Calendar.MINUTE, reminderBO.time?.minute ?: 0)  // TODO: get default day configuration
+    val instant: Instant = reminderBO.dateTime.atZone(ZoneId.systemDefault()).toInstant()
+    val date = Date.from(instant)
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+
     val notificationIntent = Intent(context, AlertBroadcast::class.java)
     notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, reqId)
     notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TEXT, reminderBO.title)
-    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TITLE, reminderBO.time.toString()) // TODO: fix notification message
+    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TITLE,  reminderBO.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))) // TODO: fix notification message
     val pendingIntent = PendingIntent.getBroadcast(context, reqId, notificationIntent, PendingIntent.FLAG_MUTABLE);
 
     val alarmManager = (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?)!!

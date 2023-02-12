@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
 data class ObsidianReminderPluginActualReminderDTO(
-  @SerializedName("title") var title: String? = null,
-  @SerializedName("time") var time: LocalDateTime? = null,
+  @SerializedName("title") var title: String,
+  @SerializedName("time") var time: ObsidianReminderPluginDate,
   @SerializedName("rowNumber") var rowNumber: Int? = null
 )
