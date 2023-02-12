@@ -4,5 +4,5 @@ import java.time.LocalDateTime
 
 data class ObsidianReminderBO(
   var title: String,
-  var time: LocalDateTime?,
+  var dateTime: LocalDateTime,
 )

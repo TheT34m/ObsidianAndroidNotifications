@@ -13,11 +13,12 @@ class NotificationManager {
     companion object {
         var NOTIFICATION_CHANNEL_ID = "OBSIDIAN_TASK_NOTIFICATIONS_ID"
 
-      @JvmStatic fun notify(context: Context, title: String, text: String, reqId: Int = 1) {
+      @JvmStatic fun notify(context: Context, title: String, text: String, reqId: Int = 1): Notification {
             this.ensureNotificationChannelExists(context);
             val notification = this.createNotification(context, title, text);
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.notify(reqId, notification)
+            return notification;
         }
 
       fun createNotification(context: Context, title: String, text: String): Notification {
