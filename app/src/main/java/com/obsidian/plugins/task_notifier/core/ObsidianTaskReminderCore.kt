@@ -24,7 +24,7 @@ class ObsidianTaskReminderCore {
       NotificationManager.notify(context, "file changed at", "path ${uri.path}")
 
       val folders = PersistenceManager.getWatchedFolders(context);
-      if (!folders.contains(uri.path)) return OnFileChangedResult.STOP_LISTENING
+      if (!folders.contains(uri.toString())) return OnFileChangedResult.STOP_LISTENING
 
       val reminders = ObsidianPluginManager.processFile(content)
       AlertManager().syncNotifications(context, reminders);
