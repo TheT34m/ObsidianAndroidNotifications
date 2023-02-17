@@ -47,7 +47,7 @@ class ObsidianPluginManager {
       obsidianConfig.reminders?.entries?.forEach { it ->
         it.value?.forEach { reminder ->
           if (reminder?.title != null) {
-            result.add(ObsidianReminderBO(reminder.title, reminder.time.dateTime))
+            result.add(ObsidianReminderBO(reminder.title, reminder.time.dateTime, null))
           };
         }
       }
