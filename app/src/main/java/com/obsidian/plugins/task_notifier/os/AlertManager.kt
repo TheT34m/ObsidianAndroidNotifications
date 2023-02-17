@@ -14,21 +14,22 @@ import java.util.*
 class AlertManager {
   fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
     cancelAllNotifications(context)
-    val reqIds = createNotifications(context, reminders)
-    PersistenceManager.addActiveAlerts(context, reqIds)
+    val remindersWithReqIds = createNotifications(context, reminders)
+    PersistenceManager.addActiveReminders(context, remindersWithReqIds)
   }
 
   private fun createNotifications(
     context: Context,
     reminders: List<ObsidianReminderBO>
-  ): List<Int> {
+  ): List<ObsidianReminderBO> {
     val reqIds: ArrayList<Int> = ArrayList()
     reminders.forEach { reminder ->
       val reqId = UUID.randomUUID().hashCode()
       createNotification(context, reminder, reqId)
+      reminder.reqId = reqId
       reqIds.add(reqId)
     }
-    return reqIds
+    return reminders
   }
 
   private fun createNotification(context: Context, reminderBO: ObsidianReminderBO, reqId: Int) {
@@ -52,15 +53,15 @@ class AlertManager {
   }
 
   private fun cancelAllNotifications(context: Context) {
-    val reqIds = PersistenceManager.getActiveAlerts(context)
-    reqIds.forEach {
+    val reminders = PersistenceManager.getActiveReminders(context)
+    reminders.forEach {
       val notificationIntent = Intent(context, AlertBroadcast::class.java)
-      notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, it)
+      notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
       val pendingIntent =
-        PendingIntent.getBroadcast(context, it, notificationIntent, PendingIntent.FLAG_MUTABLE)
+        PendingIntent.getBroadcast(context, it.reqId!!, notificationIntent, PendingIntent.FLAG_MUTABLE)
       pendingIntent.cancel()
     }
     // reset the list
-    PersistenceManager.addActiveAlerts(context, ArrayList())
+    PersistenceManager.addActiveReminders(context, ArrayList())
   }
 }
