@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="5dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="5dp">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="80dp">
+
+    <TextView
+      android:id="@+id/active_reminder_item_time_textview"
+      android:layout_width="269dp"
+      android:layout_height="27dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="12dp"
+      android:text="title"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/active_reminder_item_title_textview"
+      android:layout_width="270dp"
+      android:layout_height="24dp"
+      android:layout_marginStart="17dp"
+      android:layout_marginBottom="10dp"
+      android:text="TextView"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+      android:id="@+id/active_reminder_item_remove_button"
+      android:layout_width="54dp"
+      android:layout_height="50dp"
+      android:layout_marginEnd="16dp"
+      android:text="❌"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

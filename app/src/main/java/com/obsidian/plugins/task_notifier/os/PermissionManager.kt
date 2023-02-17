@@ -15,6 +15,15 @@ class PermissionManager {
     const val STORAGE_PERMISSION_REQUEST_CODE = 1
 
     @JvmStatic
+    fun askPermissionForFolder(context: Activity) {
+      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = "application/json"
+      }
+      context.startActivityForResult(intent, 1)
+    }
+
+    @JvmStatic
     fun ensureStoragePermission(activity: Activity) {
       // Check if we have write permission
       val permission: Int =

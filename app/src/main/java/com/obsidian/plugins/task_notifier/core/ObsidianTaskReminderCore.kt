@@ -15,6 +15,7 @@ class ObsidianTaskReminderCore {
     @JvmStatic
     fun init(context: Context) {
       Logger.info("ObsidianTaskReminderCore.init")
+      PersistenceManager.init(context)
       val folders = PersistenceManager.getWatchedFolders(context)
       ServiceManager.ensureAllPathsAreWatched(context, folders)
     }
@@ -26,9 +27,12 @@ class ObsidianTaskReminderCore {
 
       val folders = PersistenceManager.getWatchedFolders(context)
       if (!folders.contains(uri.toString())) return OnFileChangedResult.STOP_LISTENING
-
-      val reminders = ObsidianPluginManager.processFile(content)
-      AlertManager().syncNotifications(context, reminders)
+      try {
+        val reminders = ObsidianPluginManager.processFile(content)
+        AlertManager().syncNotifications(context, reminders)
+      } catch (e: Exception) {
+        Logger.info("Failed to process reminders. Error: ${e.message} ${e.cause}")
+      }
       return OnFileChangedResult.ACK
     }
 
@@ -39,6 +43,14 @@ class ObsidianTaskReminderCore {
 
       NotificationManager.notify(context, "folder added", "path ${uri.path}")
       PersistenceManager.addWatchedFolder(uri, context)
+      val folders = PersistenceManager.getWatchedFolders(context)
+      ServiceManager.ensureAllPathsAreWatched(context, folders)
+    }
+
+    @JvmStatic
+    fun removeFolder(context: Context, folderPath: String) {
+      Logger.info("Removing watched folder ${folderPath}")
+      PersistenceManager.removeWatchedFolder(folderPath, context)
       val folders = PersistenceManager.getWatchedFolders(context)
       ServiceManager.ensureAllPathsAreWatched(context, folders)
     }

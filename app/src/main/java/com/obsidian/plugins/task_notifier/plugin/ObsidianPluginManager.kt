@@ -27,21 +27,6 @@ class ObsidianPluginManager {
 
     @JvmStatic
     fun processFile(json: String): ArrayList<ObsidianReminderBO> {
-      // get configs
-      val jsonObject = Gson().fromJson(json, com.google.gson.JsonObject::class.java)
-      val remindersObject = jsonObject.getAsJsonObject("settings")
-      val dateTimeFormat = "YYYY-MM-DD HH:mm"
-      val reminderTime = remindersObject["reminderTime"].asString
-
-      val gson = GsonBuilder()
-        .registerTypeAdapter(
-          ObsidianReminderPluginDate::class.java,
-          JsonDeserializer<Any?> { json, typeOfT, context ->
-            ObsidianReminderPluginDate(json.asString, dateTimeFormat, reminderTime)
-          }).create()
-
-      val obsidianConfig: ObsidianReminderPluginConfigDTO =
-        gson.fromJson(json, ObsidianReminderPluginConfigDTO::class.java)
       val result: ArrayList<ObsidianReminderBO> = ArrayList();
 
       obsidianConfig.reminders?.entries?.forEach { it ->
@@ -50,7 +35,7 @@ class ObsidianPluginManager {
             result.add(ObsidianReminderBO(reminder.title, reminder.time.dateTime, null))
           };
         }
-      }
+
       return result;
     }
   }
