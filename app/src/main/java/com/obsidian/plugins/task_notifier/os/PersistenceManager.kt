@@ -4,14 +4,20 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.net.Uri
+import com.google.gson.GsonBuilder
+import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.plugin.PersistentObsidianReminderBO
+import com.obsidian.plugins.task_notifier.utils.LocalDateTimeDeserializer
+import com.obsidian.plugins.task_notifier.utils.LocalDateTimeSerializer
 import com.obsidian.plugins.task_notifier.utils.Logger
+import java.time.LocalDateTime
 
 
 class PersistenceManager {
   companion object {
     private val STORE_NAME = "Obsidian.Task.Reminder"
     private val KEY_WATCHED_FOLDERS = "WATCHED_FOLDERS"
-    private val ACTIVE_ALERTS = "ACTIVE_ALERTS"
+    private val ACTIVE_REMINDERS = "ACTIVE_REMINDERS"
     private val SEPARATOR = "$&$"
 
     fun getWatchedFolders(context: Context): List<String> {
@@ -45,21 +51,38 @@ class PersistenceManager {
       return value!!.split(SEPARATOR)
     }
 
-    private fun getStore(context: Context): SharedPreferences {
+    fun getStore(context: Context): SharedPreferences {
       return context.getSharedPreferences(STORE_NAME, MODE_PRIVATE)
     }
 
-    fun addActiveAlerts(context: Context, reqIds: List<Int>) {
+    fun addActiveReminders(context: Context, reminders: List<ObsidianReminderBO>) {
       val editor: SharedPreferences.Editor = getStore(context).edit()
-      editor.putString(ACTIVE_ALERTS, reqIds.joinToString(SEPARATOR))
+      val gson = GsonBuilder()
+        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+        .create()
+
+      val json = gson.toJson(PersistentObsidianReminderBO(reminders))
+      editor.putString(ACTIVE_REMINDERS, json)
       editor.commit()
     }
 
-    fun getActiveAlerts(context: Context): List<Int> {
-      val value = getStore(context).getString(ACTIVE_ALERTS, "")
+    fun getActiveReminders(context: Context): List<ObsidianReminderBO> {
+      val value = getStore(context).getString(ACTIVE_REMINDERS, "")
       if (value == "" || value == null) return emptyList()
+      val gson = GsonBuilder()
+        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
+        .create()
+
+      val reminders: PersistentObsidianReminderBO = gson.fromJson(value, PersistentObsidianReminderBO::class.java)
       Logger.info("PersistenceManager.getActiveAlerts ids: $value")
-      return value.split(SEPARATOR).map { it.toInt() }
+      return reminders.reminders;
+    }
+
+    fun removeActiveReminder(context: Context, reqId: Int) {
+      val reminders = this.getActiveReminders(context)
+      val filteredReminders = reminders.filter { it.reqId != reqId }
+      this.addActiveReminders(context, filteredReminders)
     }
   }
 }
+
