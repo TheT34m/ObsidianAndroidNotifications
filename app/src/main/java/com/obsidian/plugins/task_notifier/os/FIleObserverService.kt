@@ -94,11 +94,13 @@ class FileObserverService : Service() {
 
 
   private fun createForeGroundNotification(context: Context) {
+    NotificationManager.ensureForegroundChannelExists(context);
     val notification = NotificationManager.notify(
       context,
       "Obisidian Reminder running",
       "background",
-      99
+      99,
+      NotificationManager.NOTIFICATION_FOREGROUND_CHANNEL_ID
     )
     startForeground(1, notification)
   }
