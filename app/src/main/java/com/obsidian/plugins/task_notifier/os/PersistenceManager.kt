@@ -51,7 +51,7 @@ class PersistenceManager {
       return value!!.split(SEPARATOR)
     }
 
-    fun getStore(context: Context): SharedPreferences {
+    private fun getStore(context: Context): SharedPreferences {
       return context.getSharedPreferences(STORE_NAME, MODE_PRIVATE)
     }
 

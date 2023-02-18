@@ -98,7 +98,7 @@ class FileObserverService : Service() {
       context,
       "Obisidian Reminder running",
       "background",
-      1
+      99
     )
     startForeground(1, notification)
   }

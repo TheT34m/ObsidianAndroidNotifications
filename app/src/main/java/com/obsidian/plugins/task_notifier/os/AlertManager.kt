@@ -38,11 +38,11 @@ class AlertManager {
     val calendar = Calendar.getInstance()
     calendar.time = date
 
-    val notificationIntent = Intent(context, AlertBroadcast::class.java)
-    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, reqId)
-    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TEXT, reminderBO.title)
+    val notificationIntent = Intent(context, ReminderBroadcast::class.java)
+    notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, reqId)
+    notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_TEXT, reminderBO.title)
     notificationIntent.putExtra(
-      AlertBroadcast.NOTIFICATION_TITLE,
+      ReminderBroadcast.NOTIFICATION_TITLE,
       reminderBO.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
     ) // TODO: fix notification message
     val pendingIntent =
@@ -55,8 +55,8 @@ class AlertManager {
   private fun cancelAllNotifications(context: Context) {
     val reminders = PersistenceManager.getActiveReminders(context)
     reminders.forEach {
-      val notificationIntent = Intent(context, AlertBroadcast::class.java)
-      notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
+      val notificationIntent = Intent(context, ReminderBroadcast::class.java)
+      notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
       val pendingIntent =
         PendingIntent.getBroadcast(context, it.reqId!!, notificationIntent, PendingIntent.FLAG_MUTABLE)
       pendingIntent.cancel()
