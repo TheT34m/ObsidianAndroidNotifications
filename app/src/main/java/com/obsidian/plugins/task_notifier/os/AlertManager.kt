@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.utils.Logger
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -56,12 +57,21 @@ class AlertManager {
 
   private fun cancelAllNotifications(context: Context) {
     val reminders = PersistenceManager.getActiveReminders(context)
-    reminders.forEach {
-      val notificationIntent = Intent(context, ReminderBroadcast::class.java)
-      notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
-      val pendingIntent =
-        PendingIntent.getBroadcast(context, it.reqId!!, notificationIntent, PendingIntent.FLAG_MUTABLE)
-      pendingIntent.cancel()
+    try {
+      reminders.forEach {
+        val notificationIntent = Intent(context, ReminderBroadcast::class.java)
+        notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
+        val pendingIntent =
+          PendingIntent.getBroadcast(
+            context,
+            it.reqId!!,
+            notificationIntent,
+            PendingIntent.FLAG_MUTABLE
+          )
+        pendingIntent.cancel()
+      }
+    } catch (e: Exception) {
+      Logger.error("Cannot cancel notifications")
     }
     // reset the list
     PersistenceManager.addActiveReminders(context, ArrayList())
