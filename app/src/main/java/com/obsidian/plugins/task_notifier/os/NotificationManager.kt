@@ -12,14 +12,16 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.obsidian.plugins.task_notifier.R
+import com.obsidian.plugins.task_notifier.utils.ScopeEnum
 
 class NotificationManager {
   companion object {
     var NOTIFICATION_CHANNEL_ID = "OBSIDIAN_TASK_NOTIFICATIONS_ID"
-    var NOTIFICATION_FOREGROUND_CHANNEL_ID = "OBSIDIAN_TASK_FREGROUND_ID"
+    var NOTIFICATION_FOREGROUND_CHANNEL_ID = "OBSIDIAN_TASK_FOREGROUND_ID"
 
     @JvmStatic
-    fun notify(context: Context, title: String, text: String, reqId: Int = 1, channel: String = NOTIFICATION_CHANNEL_ID): Notification {
+    fun notify(context: Context, title: String, text: String, reqId: Int = 1, scope: ScopeEnum = ScopeEnum.REMINDER): Notification {
+      val channel: String = this.getChannelFromScope(scope)
       this.ensureNotificationChannelExists(context, channel)
       val notification = this.createNotification(context, title, text, channel)
       val notificationManager = NotificationManagerCompat.from(context)
@@ -58,5 +60,15 @@ class NotificationManager {
         )
       notificationManager.createNotificationChannel(channel)
     }
+
+    fun getChannelFromScope(scope: ScopeEnum): String {
+      if (scope.equals(ScopeEnum.REMINDER)) {
+        return NOTIFICATION_CHANNEL_ID
+      } else if (scope.equals(ScopeEnum.APPLICATION)) {
+        return NOTIFICATION_FOREGROUND_CHANNEL_ID
+      }
+      return NOTIFICATION_CHANNEL_ID
+    }
   }
+
 }
