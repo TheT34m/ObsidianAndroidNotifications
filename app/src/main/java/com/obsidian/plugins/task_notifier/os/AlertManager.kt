@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -24,6 +25,7 @@ class AlertManager {
   ): List<ObsidianReminderBO> {
     val reqIds: ArrayList<Int> = ArrayList()
     reminders.forEach { reminder ->
+      if (reminder.dateTime < LocalDateTime.now()) return@forEach
       val reqId = UUID.randomUUID().hashCode()
       createNotification(context, reminder, reqId)
       reminder.reqId = reqId
