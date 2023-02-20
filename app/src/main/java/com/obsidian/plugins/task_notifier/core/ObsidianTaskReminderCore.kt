@@ -8,6 +8,7 @@ import com.obsidian.plugins.task_notifier.os.PersistenceManager
 import com.obsidian.plugins.task_notifier.os.ServiceManager
 import com.obsidian.plugins.task_notifier.plugin.ObsidianPluginManager
 import com.obsidian.plugins.task_notifier.utils.Logger
+import com.obsidian.plugins.task_notifier.utils.ScopeEnum
 
 class ObsidianTaskReminderCore {
   companion object {
@@ -21,7 +22,7 @@ class ObsidianTaskReminderCore {
     @JvmStatic
     fun onFileChanged(context: Context, uri: Uri, content: String): OnFileChangedResult {
       Logger.info("ObsidianTaskReminderCore.onFileChanged path: ${uri.path} content: $content")
-      NotificationManager.notify(context, "file changed at", "path ${uri.path}")
+      NotificationManager.notify(context, "file changed at", "path ${uri.path}", 1, ScopeEnum.APPLICATION)
 
       val folders = PersistenceManager.getWatchedFolders(context)
       if (!folders.contains(uri.toString())) return OnFileChangedResult.STOP_LISTENING
