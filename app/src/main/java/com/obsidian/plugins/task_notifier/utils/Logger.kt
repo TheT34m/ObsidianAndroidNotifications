@@ -10,6 +10,11 @@ class Logger {
     fun info(msg: String) {
       Log.i(TAG, msg)
     }
+
+    @JvmStatic
+    fun error(msg: String) {
+      Log.e(TAG, msg)
+    }
   }
 
 }

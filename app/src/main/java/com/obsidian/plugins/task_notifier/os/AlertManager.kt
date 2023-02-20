@@ -5,7 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.utils.Logger
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -14,21 +16,23 @@ import java.util.*
 class AlertManager {
   fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
     cancelAllNotifications(context)
-    val reqIds = createNotifications(context, reminders)
-    PersistenceManager.addActiveAlerts(context, reqIds)
+    val remindersWithReqIds = createNotifications(context, reminders)
+    PersistenceManager.addActiveReminders(context, remindersWithReqIds)
   }
 
   private fun createNotifications(
     context: Context,
     reminders: List<ObsidianReminderBO>
-  ): List<Int> {
+  ): List<ObsidianReminderBO> {
     val reqIds: ArrayList<Int> = ArrayList()
     reminders.forEach { reminder ->
+      if (reminder.dateTime < LocalDateTime.now()) return@forEach
       val reqId = UUID.randomUUID().hashCode()
       createNotification(context, reminder, reqId)
+      reminder.reqId = reqId
       reqIds.add(reqId)
     }
-    return reqIds
+    return reminders
   }
 
   private fun createNotification(context: Context, reminderBO: ObsidianReminderBO, reqId: Int) {
@@ -37,11 +41,11 @@ class AlertManager {
     val calendar = Calendar.getInstance()
     calendar.time = date
 
-    val notificationIntent = Intent(context, AlertBroadcast::class.java)
-    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, reqId)
-    notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_TEXT, reminderBO.title)
+    val notificationIntent = Intent(context, ReminderBroadcast::class.java)
+    notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, reqId)
+    notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_TEXT, reminderBO.title)
     notificationIntent.putExtra(
-      AlertBroadcast.NOTIFICATION_TITLE,
+      ReminderBroadcast.NOTIFICATION_TITLE,
       reminderBO.dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
     ) // TODO: fix notification message
     val pendingIntent =
@@ -52,15 +56,24 @@ class AlertManager {
   }
 
   private fun cancelAllNotifications(context: Context) {
-    val reqIds = PersistenceManager.getActiveAlerts(context)
-    reqIds.forEach {
-      val notificationIntent = Intent(context, AlertBroadcast::class.java)
-      notificationIntent.putExtra(AlertBroadcast.NOTIFICATION_CHANNEL_ID, it)
-      val pendingIntent =
-        PendingIntent.getBroadcast(context, it, notificationIntent, PendingIntent.FLAG_MUTABLE)
-      pendingIntent.cancel()
+    val reminders = PersistenceManager.getActiveReminders(context)
+    try {
+      reminders.forEach {
+        val notificationIntent = Intent(context, ReminderBroadcast::class.java)
+        notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
+        val pendingIntent =
+          PendingIntent.getBroadcast(
+            context,
+            it.reqId!!,
+            notificationIntent,
+            PendingIntent.FLAG_MUTABLE
+          )
+        pendingIntent.cancel()
+      }
+    } catch (e: Exception) {
+      Logger.error("Cannot cancel notifications")
     }
     // reset the list
-    PersistenceManager.addActiveAlerts(context, ArrayList())
+    PersistenceManager.addActiveReminders(context, ArrayList())
   }
 }
