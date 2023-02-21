@@ -13,14 +13,13 @@ import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
 import com.obsidian.plugins.task_notifier.plugin.PersistentObsidianReminderBO
 import com.obsidian.plugins.task_notifier.utils.LocalDateTimeDeserializer
 import com.obsidian.plugins.task_notifier.utils.LocalDateTimeSerializer
-import com.obsidian.plugins.task_notifier.utils.Logger
 import java.time.LocalDateTime
 
 class PersistenceManager {
   companion object {
     private const val STORE_NAME = "Obsidian.Task.Reminder"
     private const val KEY_WATCHED_FOLDERS = "WATCHED_FOLDERS"
-    private const val ACTIVE_ALERTS = "ACTIVE_ALERTS"
+    private const val ACTIVE_REMINDERS = "ACTIVE_REMINDERS"
     private const val SEPARATOR = "$&$"
 
     private lateinit var prefSubject: BehaviorSubject<SharedPreferences>
