@@ -57,8 +57,9 @@ class AlertManager {
 
   private fun cancelAllNotifications(context: Context) {
     val reminders = PersistenceManager.getActiveReminders(context)
-    try {
-      reminders.forEach {
+    reminders.forEach {
+      if (it.dateTime < LocalDateTime.now()) return@forEach
+      try {
         val notificationIntent = Intent(context, ReminderBroadcast::class.java)
         notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
         val pendingIntent =
@@ -69,9 +70,9 @@ class AlertManager {
             PendingIntent.FLAG_MUTABLE
           )
         pendingIntent.cancel()
+      } catch (e: Exception) {
+        Logger.error("Cannot cancel notifications")
       }
-    } catch (e: Exception) {
-      Logger.error("Cannot cancel notifications")
     }
     // reset the list
     PersistenceManager.addActiveReminders(context, ArrayList())
