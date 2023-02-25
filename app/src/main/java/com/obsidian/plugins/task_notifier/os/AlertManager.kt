@@ -61,8 +61,7 @@ class AlertManager {
     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
   }
 
-  private fun cancelAllNotifications(context: Context) {
-    val reminders = PersistenceManager.getActiveReminders(context)
+  private fun cancelAllNotifications(context: Context, reminders: List<ObsidianActiveReminderBO>) {
     reminders.forEach {
       if (it.reqId == null) {
         Logger.info("ActiveReminderBO not yet has notification req id: ${it.title}")
