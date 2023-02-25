@@ -46,8 +46,9 @@ class ObsidianPluginManager {
 
       obsidianConfig.reminders?.entries?.forEach { it ->
         it.value?.forEach { reminder ->
-          if (reminder?.title != null) {
-            result.add(ObsidianActiveReminderBO(reminder.title, reminder.time.dateTime, null))
+          Logger.info("ObsidianPluginManager.processFile processing reminder: $reminder")
+          if (reminder?.title != null && reminder?.time != null) {
+            result.add(ObsidianActiveReminderBO(reminder.title, reminder.time!!.dateTime, null))
           };
         }
       }

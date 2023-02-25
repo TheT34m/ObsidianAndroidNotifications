@@ -14,10 +14,12 @@ import java.util.*
 
 
 class AlertManager {
-  fun syncNotifications(context: Context, reminders: List<ObsidianActiveReminderBO>) {
-    cancelAllNotifications(context)
-    val remindersWithReqIds = createNotifications(context, reminders)
-    PersistenceManager.setActiveReminders(context, remindersWithReqIds)
+  fun syncNotificationsAndAssignReqIds(
+    context: Context,
+    reminders: List<ObsidianActiveReminderBO>
+  ): List<ObsidianActiveReminderBO> {
+    cancelAllNotifications(context, reminders)
+    return createNotifications(context, reminders)
   }
 
   private fun createNotifications(
@@ -35,7 +37,11 @@ class AlertManager {
     return reminders
   }
 
-  private fun createNotification(context: Context, reminderBO: ObsidianActiveReminderBO, reqId: Int) {
+  private fun createNotification(
+    context: Context,
+    reminderBO: ObsidianActiveReminderBO,
+    reqId: Int
+  ) {
     val instant: Instant = reminderBO.dateTime.atZone(ZoneId.systemDefault()).toInstant()
     val date = Date.from(instant)
     val calendar = Calendar.getInstance()
@@ -55,10 +61,13 @@ class AlertManager {
     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
   }
 
-  private fun cancelAllNotifications(context: Context) {
-    val reminders = PersistenceManager.getActiveReminders(context)
+  private fun cancelAllNotifications(context: Context, reminders: List<ObsidianActiveReminderBO>) {
     try {
       reminders.forEach {
+        if(it.reqId == null){
+          Logger.info("ActiveReminderBO not yet has notification req id: ${it.title}")
+          return
+        }
         val notificationIntent = Intent(context, ReminderBroadcast::class.java)
         notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
         val pendingIntent =
@@ -73,7 +82,5 @@ class AlertManager {
     } catch (e: Exception) {
       Logger.error("Cannot cancel notifications")
     }
-    // reset the list
-    PersistenceManager.setActiveReminders(context, ArrayList())
   }
 }

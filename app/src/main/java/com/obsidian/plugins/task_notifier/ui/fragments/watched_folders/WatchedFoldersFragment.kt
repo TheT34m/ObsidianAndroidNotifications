@@ -29,7 +29,6 @@ class WatchedFoldersFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    //val folders = PersistenceManager.getWatchedFolders(this.context!!)
     PersistenceManager.getWatchedFolders().subscribe {
       folders.clear()
       folders.addAll((it))
