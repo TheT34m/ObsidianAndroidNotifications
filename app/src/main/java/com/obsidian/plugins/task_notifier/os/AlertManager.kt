@@ -61,13 +61,15 @@ class AlertManager {
     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
   }
 
-  private fun cancelAllNotifications(context: Context, reminders: List<ObsidianActiveReminderBO>) {
-    try {
-      reminders.forEach {
-        if(it.reqId == null){
-          Logger.info("ActiveReminderBO not yet has notification req id: ${it.title}")
-          return
-        }
+  private fun cancelAllNotifications(context: Context) {
+    val reminders = PersistenceManager.getActiveReminders(context)
+    reminders.forEach {
+      if (it.reqId == null) {
+        Logger.info("ActiveReminderBO not yet has notification req id: ${it.title}")
+        return
+      }
+      if (it.dateTime < LocalDateTime.now()) return@forEach
+      try {
         val notificationIntent = Intent(context, ReminderBroadcast::class.java)
         notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_CHANNEL_ID, it.reqId)
         val pendingIntent =
@@ -78,9 +80,9 @@ class AlertManager {
             PendingIntent.FLAG_MUTABLE
           )
         pendingIntent.cancel()
+      } catch (e: Exception) {
+        Logger.error("Cannot cancel notifications")
       }
-    } catch (e: Exception) {
-      Logger.error("Cannot cancel notifications")
     }
   }
 }
