@@ -8,6 +8,7 @@ import android.os.FileObserver
 import android.os.IBinder
 import com.obsidian.plugins.task_notifier.core.ObsidianTaskReminderCore
 import com.obsidian.plugins.task_notifier.core.OnFileChangedResult
+import com.obsidian.plugins.task_notifier.utils.Constants
 import com.obsidian.plugins.task_notifier.utils.FileUtils
 import com.obsidian.plugins.task_notifier.utils.Logger
 import com.obsidian.plugins.task_notifier.utils.ScopeEnum
@@ -97,7 +98,7 @@ class FileObserverService : Service() {
   private fun createForeGroundNotification(context: Context) {
     val notification = NotificationManager.notify(
       context,
-      "Obisidian Reminder running",
+      Constants.APPLICATION_NAME,
       "background",
       hashCode(),
       ScopeEnum.APPLICATION

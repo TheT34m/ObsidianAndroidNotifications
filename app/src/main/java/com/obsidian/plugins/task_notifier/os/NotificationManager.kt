@@ -16,8 +16,8 @@ import com.obsidian.plugins.task_notifier.utils.ScopeEnum
 
 class NotificationManager {
   companion object {
-    var NOTIFICATION_CHANNEL_ID = "OBSIDIAN_TASK_NOTIFICATIONS_ID"
-    var NOTIFICATION_FOREGROUND_CHANNEL_ID = "OBSIDIAN_TASK_FOREGROUND_ID"
+    private var NOTIFICATION_CHANNEL_ID = "OBSIDIAN_TASK_NOTIFICATIONS_ID"
+    private var NOTIFICATION_FOREGROUND_CHANNEL_ID = "OBSIDIAN_TASK_FOREGROUND_ID"
 
     @JvmStatic
     fun notify(context: Context, title: String, text: String, reqId: Int = 1, scope: ScopeEnum = ScopeEnum.REMINDER): Notification {
@@ -29,10 +29,11 @@ class NotificationManager {
       return notification
     }
 
-    fun createNotification(context: Context, title: String, text: String, channel: String): Notification {
+    private fun createNotification(context: Context, title: String, text: String, channel: String): Notification {
       val builder: NotificationCompat.Builder =
         NotificationCompat.Builder(context, channel)
           .setSmallIcon(R.mipmap.ic_launcher)
+          .setBadgeIconType(R.mipmap.ic_launcher)
           .setContentTitle(title)
           .setContentText(text)
           .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -61,7 +62,7 @@ class NotificationManager {
       notificationManager.createNotificationChannel(channel)
     }
 
-    fun getChannelFromScope(scope: ScopeEnum): String {
+    private fun getChannelFromScope(scope: ScopeEnum): String {
       if (scope.equals(ScopeEnum.REMINDER)) {
         return NOTIFICATION_CHANNEL_ID
       } else if (scope.equals(ScopeEnum.APPLICATION)) {
