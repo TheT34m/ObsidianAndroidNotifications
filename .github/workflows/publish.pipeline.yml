@@ -15,6 +15,7 @@ env:
 
 jobs:
   build:
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -26,34 +27,28 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Install Android SDK
-        uses: actions/setup-android@v1
-        with:
-          android-sdk-version: ${{ env.ANDROID_SDK_TOOLS }}
+      - name: Grant execute permission for Gradle
+        run: chmod +x gradlew
 
       - name: Build APK
-        run: |
-          export ANDROID_HOME=${{ env.ANDROID_HOME }}
-          export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-          echo y | android update sdk --no-ui --all --filter "platform-tools"
-          echo y | android update sdk --no-ui --all --filter "build-tools-${{ env.ANDROID_BUILD_TOOLS }}"
-          echo y | android update sdk --no-ui --all --filter "android-${{ env.ANDROID_COMPILE_SDK }}"
-          ./gradlew assembleDebug
-
-      - name: Publish APK to GitHub Releases
-        uses: actions/upload-release-asset@v1
+        run: bash ./gradlew assembleDebug --stacktrace
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/debug/app-debug.apk
-          asset_name: app-debug.apk
-          asset_content_type: application/vnd.android.package-archive
-
+          name: apk
+          path: app/build/outputs/apk/debug/app-debug.apk
   create_release:
+    name: Release APK
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create a release
+      - name: Download APK from build
+        uses: actions/download-artifact@v1
+        with:
+          name: apk
+      - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,3 +57,14 @@ jobs:
           release_name: Release ${{ env.TAG_NAME }}
           draft: false
           prerelease: false
+
+      - name: Upload Release APK
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: apk/app-debug.apk
+          asset_name: obsidian-android-notifications.apk
+          asset_content_type: application/zip
