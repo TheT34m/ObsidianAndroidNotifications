@@ -12,7 +12,8 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/black"
-    app:title="Obsidian Reminder Notificator"
+    app:title="Obsidian Reminder Notifier"
+    app:navigationIcon="@mipmap/ic_launcher"
     app:titleTextColor="@color/white" />
 
   <com.google.android.material.tabs.TabLayout

@@ -33,15 +33,18 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageButton
       android:id="@+id/active_reminder_item_remove_button"
       android:layout_width="54dp"
       android:layout_height="50dp"
       android:layout_marginEnd="16dp"
-      android:text="❌"
+      android:background="#F34336"
+      android:backgroundTintMode="add"
+      android:foreground="@mipmap/remove_icon_foreground"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent"/>
+      app:layout_constraintTop_toTopOf="parent" />
+
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
