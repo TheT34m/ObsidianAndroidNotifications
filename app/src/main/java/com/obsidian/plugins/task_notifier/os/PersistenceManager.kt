@@ -9,8 +9,8 @@ import com.obsidian.plugins.task_notifier.utils.Logger
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import com.google.gson.GsonBuilder
-import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
-import com.obsidian.plugins.task_notifier.plugin.PersistentObsidianReminderBO
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.core.bo.PersistentObsidianReminderBO
 import com.obsidian.plugins.task_notifier.utils.LocalDateTimeDeserializer
 import com.obsidian.plugins.task_notifier.utils.LocalDateTimeSerializer
 import java.time.LocalDateTime

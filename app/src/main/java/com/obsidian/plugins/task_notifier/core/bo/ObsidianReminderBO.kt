@@ -1,4 +1,4 @@
-package com.obsidian.plugins.task_notifier.plugin
+package com.obsidian.plugins.task_notifier.core.bo
 
 import java.time.LocalDateTime
 

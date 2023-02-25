@@ -4,7 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.obsidian.plugins.task_notifier.plugin.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianReminderBO
 import com.obsidian.plugins.task_notifier.utils.Logger
 import java.time.Instant
 import java.time.LocalDateTime
