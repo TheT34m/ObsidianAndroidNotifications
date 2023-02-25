@@ -10,6 +10,7 @@ on:
 
 env:
   ANDROID_COMPILE_SDK: 29
+  TAG_NAME: v1.0.0
   ANDROID_BUILD_TOOLS: 29.0.3
   ANDROID_SDK_TOOLS: 6200805
 
@@ -53,8 +54,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: Release ${{ env.TAG_NAME }}
           draft: false
           prerelease: false
 
