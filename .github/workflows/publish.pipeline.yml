@@ -10,7 +10,6 @@ on:
 
 env:
   ANDROID_COMPILE_SDK: 29
-  TAG_NAME: v1.0.0
   ANDROID_BUILD_TOOLS: 29.0.3
   ANDROID_SDK_TOOLS: 6200805
 
@@ -42,8 +41,15 @@ jobs:
     name: Release APK
     needs: build
     runs-on: ubuntu-latest
+    permissions: write-all
 
     steps:
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          # Optionally strip `v` prefix
+          strip_v: true
       - name: Download APK from build
         uses: actions/download-artifact@v1
         with:
@@ -54,8 +60,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          release_name: Release ${{ env.TAG_NAME }}
+          tag_name: ${{steps.tag.outputs.tag}}
+          release_name: Release ${{steps.tag.outputs.tag}}
           draft: false
           prerelease: false
 
