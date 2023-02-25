@@ -4,7 +4,7 @@ import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
-import com.obsidian.plugins.task_notifier.core.bo.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBO
 import com.obsidian.plugins.task_notifier.plugin.dto.v1.ObsidianReminderPluginConfigDTO
 import com.obsidian.plugins.task_notifier.plugin.dto.v1.ObsidianReminderPluginDate
 import com.obsidian.plugins.task_notifier.utils.Logger
@@ -27,7 +27,7 @@ class ObsidianPluginManager {
     }
 
     @JvmStatic
-    fun processFile(json: String): ArrayList<ObsidianReminderBO> {
+    fun processFile(json: String): ArrayList<ObsidianActiveReminderBO> {
       val jsonObject = Gson().fromJson(json, com.google.gson.JsonObject::class.java)
       val remindersObject = jsonObject.getAsJsonObject("settings")
       val dateTimeFormat = "YYYY-MM-DD HH:mm"
@@ -42,12 +42,12 @@ class ObsidianPluginManager {
 
       val obsidianConfig: ObsidianReminderPluginConfigDTO =
         gson.fromJson(json, ObsidianReminderPluginConfigDTO::class.java)
-      val result: ArrayList<ObsidianReminderBO> = ArrayList();
+      val result: ArrayList<ObsidianActiveReminderBO> = ArrayList();
 
       obsidianConfig.reminders?.entries?.forEach { it ->
         it.value?.forEach { reminder ->
           if (reminder?.title != null) {
-            result.add(ObsidianReminderBO(reminder.title, reminder.time.dateTime, null))
+            result.add(ObsidianActiveReminderBO(reminder.title, reminder.time.dateTime, null))
           };
         }
       }

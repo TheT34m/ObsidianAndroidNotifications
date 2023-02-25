@@ -4,16 +4,12 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.net.Uri
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBO
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBOFactory
 import com.obsidian.plugins.task_notifier.core.bo.WatchedFoldersBO
 import com.obsidian.plugins.task_notifier.utils.Logger
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import com.google.gson.GsonBuilder
-import com.obsidian.plugins.task_notifier.core.bo.ObsidianReminderBO
-import com.obsidian.plugins.task_notifier.core.bo.PersistentObsidianReminderBO
-import com.obsidian.plugins.task_notifier.utils.LocalDateTimeDeserializer
-import com.obsidian.plugins.task_notifier.utils.LocalDateTimeSerializer
-import java.time.LocalDateTime
 
 class PersistenceManager {
   companion object {
@@ -74,34 +70,38 @@ class PersistenceManager {
     }
 
     @JvmStatic
-    fun addActiveReminders(context: Context, reminders: List<ObsidianReminderBO>) {
+    fun setActiveReminders(context: Context, reminders: List<ObsidianActiveReminderBO>) {
       val editor: SharedPreferences.Editor = getStore(context).edit()
-      val gson = GsonBuilder()
-        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
-        .create()
+      val json = ObsidianActiveReminderBOFactory().toJSON(reminders)
+      Logger.info("PersistenceManager.setActiveReminders: $json")
 
-      val json = gson.toJson(PersistentObsidianReminderBO(reminders))
       editor.putString(ACTIVE_REMINDERS, json)
       editor.commit()
     }
 
     @JvmStatic
-    fun getActiveReminders(context: Context): List<ObsidianReminderBO> {
+    fun getActiveReminders(context: Context): List<ObsidianActiveReminderBO> {
       val value = getStore(context).getString(ACTIVE_REMINDERS, "")
-      if (value == "" || value == null) return emptyList()
-      val gson = GsonBuilder()
-        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer())
-        .create()
+      Logger.info("PersistenceManager.getActiveReminders: $value")
+      return ObsidianActiveReminderBOFactory().fromJSON(value)
+    }
 
-      val reminders: PersistentObsidianReminderBO = gson.fromJson(value, PersistentObsidianReminderBO::class.java)
-      Logger.info("PersistenceManager.getActiveAlerts ids: $value")
-      return reminders.reminders;
+    @JvmStatic
+    fun getActiveReminders(): Observable<List<ObsidianActiveReminderBO>> {
+      return prefSubject.map {
+        ObsidianActiveReminderBOFactory().fromJSON(
+          it.getString(
+            ACTIVE_REMINDERS,
+            ""
+          )
+        )
+      }
     }
 
     fun removeActiveReminder(context: Context, reqId: Int) {
       val reminders = this.getActiveReminders(context)
       val filteredReminders = reminders.filter { it.reqId != reqId }
-      this.addActiveReminders(context, filteredReminders)
+      this.setActiveReminders(context, filteredReminders)
     }
 
     @JvmStatic

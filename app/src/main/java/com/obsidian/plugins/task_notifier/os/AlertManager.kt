@@ -4,7 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.obsidian.plugins.task_notifier.core.bo.ObsidianReminderBO
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBO
 import com.obsidian.plugins.task_notifier.utils.Logger
 import java.time.Instant
 import java.time.LocalDateTime
@@ -14,16 +14,16 @@ import java.util.*
 
 
 class AlertManager {
-  fun syncNotifications(context: Context, reminders: List<ObsidianReminderBO>) {
+  fun syncNotifications(context: Context, reminders: List<ObsidianActiveReminderBO>) {
     cancelAllNotifications(context)
     val remindersWithReqIds = createNotifications(context, reminders)
-    PersistenceManager.addActiveReminders(context, remindersWithReqIds)
+    PersistenceManager.setActiveReminders(context, remindersWithReqIds)
   }
 
   private fun createNotifications(
     context: Context,
-    reminders: List<ObsidianReminderBO>
-  ): List<ObsidianReminderBO> {
+    reminders: List<ObsidianActiveReminderBO>
+  ): List<ObsidianActiveReminderBO> {
     val reqIds: ArrayList<Int> = ArrayList()
     reminders.forEach { reminder ->
       if (reminder.dateTime < LocalDateTime.now()) return@forEach
@@ -35,7 +35,7 @@ class AlertManager {
     return reminders
   }
 
-  private fun createNotification(context: Context, reminderBO: ObsidianReminderBO, reqId: Int) {
+  private fun createNotification(context: Context, reminderBO: ObsidianActiveReminderBO, reqId: Int) {
     val instant: Instant = reminderBO.dateTime.atZone(ZoneId.systemDefault()).toInstant()
     val date = Date.from(instant)
     val calendar = Calendar.getInstance()
@@ -74,6 +74,6 @@ class AlertManager {
       Logger.error("Cannot cancel notifications")
     }
     // reset the list
-    PersistenceManager.addActiveReminders(context, ArrayList())
+    PersistenceManager.setActiveReminders(context, ArrayList())
   }
 }
