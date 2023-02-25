@@ -9,8 +9,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="/mnt/extention/workspace/ObsidianAndroidNotifications" />
+            <option value="/mnt/extention/workspace/ObsidianAndroidNotifications/app" />
           </set>
         </option>
       </GradleProjectSettings>
