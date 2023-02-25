@@ -6,11 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBO
 import com.obsidian.plugins.task_notifier.databinding.ActiveRemindersFragmentBinding
+import com.obsidian.plugins.task_notifier.os.PermissionManager
+import com.obsidian.plugins.task_notifier.os.PersistenceManager
 
 class ActiveRemindersFragment : Fragment() {
   private var _binding: ActiveRemindersFragmentBinding? = null
   private val binding get() = _binding!!
+  private var activeReminders = arrayListOf<ObsidianActiveReminderBO>()
+  private var adapter: ActiveReminderListAdapter? = null
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -23,7 +28,19 @@ class ActiveRemindersFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    PersistenceManager.getActiveReminders().subscribe {
+      activeReminders.clear()
+      activeReminders.addAll((it))
+      if(adapter !== null){
+        adapter!!.notifyDataSetChanged()
+      }
+    }
+    adapter = ActiveReminderListAdapter(this.context!!, activeReminders)
     binding.activeRemindersRecyclerView.layoutManager = LinearLayoutManager(this.activity)
-    binding.activeRemindersRecyclerView.adapter =  ActiveReminderListAdapter(arrayListOf("January", "February", "March"))
+    binding.activeRemindersRecyclerView.adapter = adapter
+
+    binding.activeRemindersRecyclerView.setOnClickListener {
+      PermissionManager.askPermissionForFolder(this.activity!!)
+    }
   }
 }

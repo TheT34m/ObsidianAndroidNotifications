@@ -9,8 +9,8 @@ import com.obsidian.plugins.task_notifier.ui.fragments.active_reminders.ActiveRe
 import com.obsidian.plugins.task_notifier.ui.fragments.watched_folders.WatchedFoldersFragment
 
 val TABS = arrayOf(
-  "Active Reminders",
-  "Watched Folders"
+  "⏰ Active Reminders",
+  "🔍 Watched Folders"
 )
 
 public class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

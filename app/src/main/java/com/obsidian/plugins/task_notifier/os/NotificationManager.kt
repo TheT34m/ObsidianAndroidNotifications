@@ -32,7 +32,7 @@ class NotificationManager {
     fun createNotification(context: Context, title: String, text: String, channel: String): Notification {
       val builder: NotificationCompat.Builder =
         NotificationCompat.Builder(context, channel)
-          .setSmallIcon(R.drawable.ic_launcher_background)
+          .setSmallIcon(R.mipmap.ic_launcher)
           .setContentTitle(title)
           .setContentText(text)
           .setPriority(NotificationCompat.PRIORITY_DEFAULT)
