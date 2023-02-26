@@ -8,8 +8,26 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class FileUtils {
+
+  fun tryReadFileContent(context: Context, uri: Uri): String {
+    var result = ""
+    val fis = context.contentResolver.openInputStream(uri)
+    val isr = InputStreamReader(fis)
+    val bufferedReader = BufferedReader(isr)
+    val sb = StringBuilder()
+    var line: String?
+    while (bufferedReader.readLine().also { line = it } != null) {
+      sb.append(line)
+    }
+    fis!!.close()
+    result = sb.toString()
+    return result
+  }
+
   /**
    * Get a file path from a Uri. This will get the the path for Storage Access
    * Framework Documents, as well as the _data field for the MediaStore and

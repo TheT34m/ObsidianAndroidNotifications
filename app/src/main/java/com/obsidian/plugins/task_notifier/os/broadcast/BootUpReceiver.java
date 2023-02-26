@@ -1,4 +1,4 @@
-package com.obsidian.plugins.task_notifier.os;
+package com.obsidian.plugins.task_notifier.os.broadcast;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

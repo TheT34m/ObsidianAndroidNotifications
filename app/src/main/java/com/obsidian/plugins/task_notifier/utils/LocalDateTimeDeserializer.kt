@@ -17,13 +17,13 @@ class LocalDateTimeDeserializer : JsonDeserializer<LocalDateTime> {
     typeOfT: Type?,
     context: JsonDeserializationContext?
   ): LocalDateTime {
-    Logger.info("LocalDateTimeDeserializer.deserialize $json")
+    //Logger.info("LocalDateTimeDeserializer.deserialize $json")
     var result = LocalDateTime.now()
     try {
       result = LocalDateTime.parse(json.asString, FORMATTER)
 
     } catch (exception: Exception) {
-      Logger.error("LocalDateTimeDeserializer.deserialize Failed to parse ${json}")
+      //Logger.error("LocalDateTimeDeserializer.deserialize Failed to parse ${json}")
       result = LocalDateTime.now()
     }
     return result

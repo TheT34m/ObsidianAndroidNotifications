@@ -39,13 +39,13 @@ class RecyclerViewEmptyObserver constructor(
   }
 
   private fun syncViews() {
-    Logger.info("RecyclerViewEmptyObserver.Sync views")
+    //Logger.info("RecyclerViewEmptyObserver.Sync views")
     if (emptyView == null) return
     if (recyclerView == null) return
     if (recyclerView!!.adapter == null) return
 
     val isEmpty = recyclerView!!.adapter!!.itemCount == 0
-    Logger.info("RecyclerViewEmptyObserver.Sync isEmpty $isEmpty")
+    //Logger.info("RecyclerViewEmptyObserver.Sync isEmpty $isEmpty")
 
     if (isEmpty) {
       emptyView!!.visibility = View.VISIBLE

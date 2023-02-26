@@ -8,6 +8,7 @@ import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBO
 import com.obsidian.plugins.task_notifier.plugin.dto.v1.ObsidianReminderPluginConfigDTO
 import com.obsidian.plugins.task_notifier.plugin.dto.v1.ObsidianReminderPluginDate
 import com.obsidian.plugins.task_notifier.utils.Logger
+import java.util.*
 
 class ObsidianPluginManager {
   companion object {
@@ -36,8 +37,8 @@ class ObsidianPluginManager {
       val gson = GsonBuilder()
         .registerTypeAdapter(
           ObsidianReminderPluginDate::class.java,
-          JsonDeserializer<Any?> { json, typeOfT, context ->
-            ObsidianReminderPluginDate(json.asString, dateTimeFormat, reminderTime)
+          JsonDeserializer<Any?> { jsonX, _, _ ->
+            ObsidianReminderPluginDate(jsonX.asString, dateTimeFormat, reminderTime)
           }).create()
 
       val obsidianConfig: ObsidianReminderPluginConfigDTO =
@@ -47,8 +48,14 @@ class ObsidianPluginManager {
       obsidianConfig.reminders?.entries?.forEach { it ->
         it.value?.forEach { reminder ->
           Logger.info("ObsidianPluginManager.processFile processing reminder: $reminder")
-          if (reminder?.title != null && reminder?.time != null) {
-            result.add(ObsidianActiveReminderBO(reminder.title, reminder.time!!.dateTime, null))
+          if (reminder?.title != null && reminder.time != null) {
+            result.add(
+              ObsidianActiveReminderBO(
+                UUID.randomUUID().hashCode(),
+                reminder.title,
+                reminder.time!!.dateTime,
+              )
+            )
           };
         }
       }

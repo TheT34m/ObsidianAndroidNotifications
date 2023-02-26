@@ -98,9 +98,9 @@ class PersistenceManager {
       }
     }
 
-    fun removeActiveReminder(context: Context, reqId: Int) {
+    fun removeActiveReminder(context: Context, guid: Int) {
       val reminders = this.getActiveReminders(context)
-      val filteredReminders = reminders.filter { it.reqId != reqId }
+      val filteredReminders = reminders.filter { it.guid != guid }
       this.setActiveReminders(context, filteredReminders)
     }
 
