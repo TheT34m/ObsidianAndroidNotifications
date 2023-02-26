@@ -15,6 +15,13 @@ class Logger {
     fun error(msg: String) {
       Log.e(TAG, msg)
     }
+
+    @JvmStatic
+    fun debug(msg: String) {
+      if (Constants.IS_DEBUG_MODE) {
+        Log.d(TAG, msg)
+      }
+    }
   }
 
 }

@@ -20,7 +20,7 @@ class PermissionManager {
         addCategory(Intent.CATEGORY_OPENABLE)
         type = "application/json"
       }
-      context.startActivityForResult(intent, 1)
+      context.startActivityForResult(intent, STORAGE_PERMISSION_REQUEST_CODE)
     }
 
     @JvmStatic

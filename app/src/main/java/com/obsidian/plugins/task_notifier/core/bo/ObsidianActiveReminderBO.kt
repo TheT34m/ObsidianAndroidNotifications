@@ -9,11 +9,12 @@ import com.obsidian.plugins.task_notifier.utils.Logger
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 
-
 data class ObsidianActiveReminderBO(
+  var guid: Int,
   var title: String,
   var dateTime: LocalDateTime,
-  var reqId: Int?,
+  var filePath: String,
+  var fileRowNumber: Int,
 )
 
 class ObsidianActiveReminderBOFactory {
@@ -24,7 +25,7 @@ class ObsidianActiveReminderBOFactory {
     .create()
 
   fun toJSON(list: List<ObsidianActiveReminderBO>): String {
-    return gson.toJson(list,listType)
+    return gson.toJson(list, listType)
   }
 
   fun fromJSON(list: String?): List<ObsidianActiveReminderBO> {

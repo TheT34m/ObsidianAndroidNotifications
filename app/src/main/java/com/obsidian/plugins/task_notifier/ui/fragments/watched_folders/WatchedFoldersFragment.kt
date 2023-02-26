@@ -17,7 +17,6 @@ import com.obsidian.plugins.task_notifier.ui.fragments.RecyclerViewEmptyObserver
 class WatchedFoldersFragment : Fragment() {
   private var _binding: WatchedFoldersFragmentBinding? = null
   private val binding get() = _binding!!
-  private var addFolderButton: FloatingActionButton? = null
   private var folders = arrayListOf<String>()
   private var adapter: WatchedFoldersListAdapter? = null
 
