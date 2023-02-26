@@ -37,7 +37,7 @@ class ObsidianPluginManager {
       val gson = GsonBuilder()
         .registerTypeAdapter(
           ObsidianReminderPluginDate::class.java,
-          JsonDeserializer<Any?> { jsonX, _, _ ->
+          JsonDeserializer<Any?> { jsonX,typeOfT, context ->
             ObsidianReminderPluginDate(jsonX.asString, dateTimeFormat, reminderTime)
           }).create()
 
@@ -54,6 +54,8 @@ class ObsidianPluginManager {
                 UUID.randomUUID().hashCode(),
                 reminder.title,
                 reminder.time!!.dateTime,
+                it.key!!,
+                reminder.rowNumber!!
               )
             )
           };

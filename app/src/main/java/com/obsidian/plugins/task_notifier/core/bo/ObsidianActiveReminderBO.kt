@@ -13,6 +13,8 @@ data class ObsidianActiveReminderBO(
   var guid: Int,
   var title: String,
   var dateTime: LocalDateTime,
+  var filePath: String,
+  var fileRowNumber: Int,
 )
 
 class ObsidianActiveReminderBOFactory {

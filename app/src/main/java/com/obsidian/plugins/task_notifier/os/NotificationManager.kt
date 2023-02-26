@@ -6,8 +6,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager.STREAM_ALARM
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.BADGE_ICON_LARGE
 import androidx.core.app.NotificationManagerCompat
 import com.obsidian.plugins.task_notifier.R
 import com.obsidian.plugins.task_notifier.utils.Logger
@@ -29,13 +31,7 @@ class NotificationManager {
       scope: ScopeEnum
     ): Notification {
       Logger.info("NotificationManager.notify: $title $text $reqId $scope")
-
-      val channel: String = this.getChannelFromScope(scope)
-      this.ensureNotificationChannelExists(context, channel)
-
-      val intent = getPendingIntent(context, scope)
-      val notification = this.createNotification(context, intent, title, text, channel)
-
+      val notification = this.createNotification(context, title, text, scope)
       val androidNotificationManager = NotificationManagerCompat.from(context)
 
       if (scope !== ScopeEnum.APPLICATION) { // TODO hacky hacky hack
@@ -61,22 +57,31 @@ class NotificationManager {
 
     private fun createNotification(
       context: Context,
-      intent: Intent,
       title: String,
       text: String,
-      channel: String
+      scope: ScopeEnum
     ): Notification {
+      val channel: String = this.getChannelFromScope(scope)
+      this.ensureNotificationChannelExists(context, channel)
+      val intent = getPendingIntent(context, scope)
+
       val pendingIntent =
         PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
       val builder: NotificationCompat.Builder =
         NotificationCompat.Builder(context, channel)
-          .setSmallIcon(R.mipmap.ic_launcher)
+          .setSmallIcon(R.mipmap.notification_icon_foreground)
           .setContentIntent(pendingIntent)
-          .setBadgeIconType(R.mipmap.ic_launcher)
+          .setBadgeIconType(BADGE_ICON_LARGE)
+          .setColor(R.color.red)
           .setContentTitle(title)
           .setContentText(text)
           .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
+      when (scope) {
+        ScopeEnum.APPLICATION -> builder.setSilent(true)
+        else -> {}
+      }
       return builder.build()
     }
 

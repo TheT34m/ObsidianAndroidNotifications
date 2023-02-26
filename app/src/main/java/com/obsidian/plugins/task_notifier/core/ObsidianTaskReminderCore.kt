@@ -8,8 +8,10 @@ import com.obsidian.plugins.task_notifier.os.NotificationManager
 import com.obsidian.plugins.task_notifier.os.PersistenceManager
 import com.obsidian.plugins.task_notifier.os.ServiceManager
 import com.obsidian.plugins.task_notifier.plugin.ObsidianPluginManager
+import com.obsidian.plugins.task_notifier.utils.Constants
 import com.obsidian.plugins.task_notifier.utils.Logger
 import com.obsidian.plugins.task_notifier.utils.ScopeEnum
+import java.util.*
 
 class ObsidianTaskReminderCore {
   companion object {
@@ -27,13 +29,16 @@ class ObsidianTaskReminderCore {
     @JvmStatic
     fun onFileChanged(context: Context, uri: Uri, content: String): OnFileChangedResult {
       Logger.info("ObsidianTaskReminderCore.onFileChanged path: ${uri.path} content: $content")
-      /*NotificationManager.notify(
-        context,
-        "file changed at",
-        "path ${uri.path}",
-        1,
-        ScopeEnum.APPLICATION
-      )*/
+
+      if (Constants.IS_DEBUG_MODE) {
+        NotificationManager.notify(
+          context,
+          "file changed at",
+          "path ${uri.path}",
+          1,
+          ScopeEnum.APPLICATION
+        )
+      }
 
       val folders = PersistenceManager.getWatchedFolders(context)
       if (!folders.contains(uri.toString())) return OnFileChangedResult.STOP_LISTENING
@@ -52,13 +57,15 @@ class ObsidianTaskReminderCore {
       Logger.info("ObsidianTaskReminderCore.onWatchedPathAdded")
       if (!ObsidianPluginManager.isInterestedFile(uri)) return
 
-      /*NotificationManager.notify(
-        context,
-        "folder added",
-        "path ${uri.path}",
-        UUID.randomUUID().hashCode(),
-        ScopeEnum.APPLICATION
-      )*/
+      if (Constants.IS_DEBUG_MODE) {
+        NotificationManager.notify(
+          context,
+          "folder added",
+          "path ${uri.path}",
+          UUID.randomUUID().hashCode(),
+          ScopeEnum.APPLICATION
+        )
+      }
 
       PersistenceManager.addWatchedFolder(uri, context)
       val folders = PersistenceManager.getWatchedFolders(context)

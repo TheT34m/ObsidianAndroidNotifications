@@ -22,7 +22,7 @@ class ActiveReminderListAdapter(
   override fun onBindViewHolder(holder: ActiveReminderViewHolder, position: Int) {
     val item = activeReminders[position]
     holder.timeTextView.text = item.dateTime.format(LocalDateTimeDeserializer.FORMATTER)
-    holder.titleTextView.text = item.title
+    holder.titleTextView.text = item.title + "\n" + item.filePath
     holder.removeButton.setOnClickListener {
       ObsidianTaskReminderCore.removeActiveReminder(context, item)
     }
