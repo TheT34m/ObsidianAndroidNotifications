@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.obsidian.plugins.task_notifier.R
 import com.obsidian.plugins.task_notifier.core.ObsidianTaskReminderCore
+import com.obsidian.plugins.task_notifier.core.bo.WatchedFolderBO
 
 class WatchedFoldersListAdapter(
   private val context: Context,
-  private val watchedFolders: List<String>
+  private val watchedFolders: List<WatchedFolderBO>
 ) :
   RecyclerView.Adapter<WatchedFolderViewHolder>() {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WatchedFolderViewHolder {
@@ -22,9 +23,9 @@ class WatchedFoldersListAdapter(
 
   override fun onBindViewHolder(holder: WatchedFolderViewHolder, position: Int) {
     val item = watchedFolders[position]
-    holder.folderPathTextView.text = item
+    holder.folderPathTextView.text = item.nicePath
     holder.removeButton.setOnClickListener {
-      ObsidianTaskReminderCore.removeFolder(context, item)
+      ObsidianTaskReminderCore.removeFolder(context, item.guid)
     }
   }
 

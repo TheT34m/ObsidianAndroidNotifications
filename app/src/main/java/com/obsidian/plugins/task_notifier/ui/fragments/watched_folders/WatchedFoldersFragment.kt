@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.obsidian.plugins.task_notifier.R
+import com.obsidian.plugins.task_notifier.core.bo.WatchedFolderBO
 import com.obsidian.plugins.task_notifier.databinding.EmptyDatasetBinding
 import com.obsidian.plugins.task_notifier.databinding.WatchedFoldersFragmentBinding
 import com.obsidian.plugins.task_notifier.os.PermissionManager
@@ -17,7 +18,7 @@ import com.obsidian.plugins.task_notifier.ui.fragments.RecyclerViewEmptyObserver
 class WatchedFoldersFragment : Fragment() {
   private var _binding: WatchedFoldersFragmentBinding? = null
   private val binding get() = _binding!!
-  private var folders = arrayListOf<String>()
+  private var folders = arrayListOf<WatchedFolderBO>()
   private var adapter: WatchedFoldersListAdapter? = null
 
   override fun onCreateView(

@@ -41,7 +41,8 @@ class ObsidianTaskReminderCore {
       }
 
       val folders = PersistenceManager.getWatchedFolders(context)
-      if (!folders.contains(uri.toString())) return OnFileChangedResult.STOP_LISTENING
+      val matchingFolders = folders.filter { it.uri == uri.toString() }
+      if (matchingFolders.isEmpty()) return OnFileChangedResult.STOP_LISTENING
       try {
         val reminders = ObsidianPluginManager.processFile(content)
         AlarmManager().syncAlarmsWithReminders(context, reminders)
@@ -94,9 +95,9 @@ class ObsidianTaskReminderCore {
     }
 
     @JvmStatic
-    fun removeFolder(context: Context, folderPath: String) {
-      Logger.info("Removing watched folder $folderPath")
-      PersistenceManager.removeWatchedFolder(folderPath, context)
+    fun removeFolder(context: Context, guid: String) {
+      Logger.info("Removing watched folder guid $guid")
+      PersistenceManager.removeWatchedFolder(guid, context)
       val folders = PersistenceManager.getWatchedFolders(context)
       ServiceManager.ensureAllPathsAreWatched(context, folders)
     }
