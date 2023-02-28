@@ -28,9 +28,9 @@ class ObsidianActiveReminderBOFactory {
     return gson.toJson(list, listType)
   }
 
-  fun fromJSON(list: String?): List<ObsidianActiveReminderBO> {
-    Logger.info("ObsidianActiveReminderBOFactory.fromJSON: $list")
-    if (list.isNullOrBlank()) return emptyList()
-    return gson.fromJson(list, listType)
+  fun fromJSON(json: String?): List<ObsidianActiveReminderBO> {
+    Logger.info("ObsidianActiveReminderBOFactory.fromJSON: $json")
+    if (json.isNullOrBlank()) return emptyList()
+    return gson.fromJson(json, listType)
   }
 }

@@ -33,7 +33,7 @@ class ActiveRemindersFragment : Fragment() {
     PersistenceManager.getActiveReminders().subscribe {
       activeReminders.clear()
       activeReminders.addAll((it))
-      if(adapter !== null){
+      if(adapter != null){
         adapter!!.notifyDataSetChanged()
       }
     }

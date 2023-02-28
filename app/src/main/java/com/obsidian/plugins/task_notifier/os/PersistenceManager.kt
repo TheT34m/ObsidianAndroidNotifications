@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBO
 import com.obsidian.plugins.task_notifier.core.bo.ObsidianActiveReminderBOFactory
+import com.obsidian.plugins.task_notifier.core.bo.WatchedFolderBO
 import com.obsidian.plugins.task_notifier.core.bo.WatchedFoldersBO
 import com.obsidian.plugins.task_notifier.utils.Logger
 import io.reactivex.rxjava3.core.Observable
@@ -16,7 +17,6 @@ class PersistenceManager {
     private const val STORE_NAME = "Obsidian.Task.Reminder"
     private const val KEY_WATCHED_FOLDERS = "WATCHED_FOLDERS"
     private const val ACTIVE_REMINDERS = "ACTIVE_REMINDERS"
-    private const val SEPARATOR = "$&$"
 
     private lateinit var prefSubject: BehaviorSubject<SharedPreferences>
 
@@ -33,38 +33,45 @@ class PersistenceManager {
     }
 
     @JvmStatic
-    fun getWatchedFolders(context: Context): List<String> {
-      return getWatchedFoldersList(context).getPaths()
+    fun getWatchedFolders(context: Context): List<WatchedFolderBO> {
+      return getWatchedFoldersWrapper(context).getFolders()
     }
 
     @JvmStatic
-    fun getWatchedFolders(): Observable<List<String>> {
-      return prefSubject.map { WatchedFoldersBO(it.getString(KEY_WATCHED_FOLDERS, "")).getPaths() }
+    fun getWatchedFolders(): Observable<List<WatchedFolderBO>> {
+      return prefSubject.map {
+        WatchedFoldersBO(
+          it.getString(
+            KEY_WATCHED_FOLDERS,
+            ""
+          )
+        ).getFolders()
+      }
     }
 
     @JvmStatic
     fun addWatchedFolder(newFolder: Uri, context: Context) {
-      var folders = getWatchedFoldersList(context);
-      folders.addFolder(newFolder)
+      var folders = getWatchedFoldersWrapper(context);
+      folders.addFolder(context, newFolder)
       setWatchedFoldersList(folders, context)
     }
 
     @JvmStatic
-    fun removeWatchedFolder(folderPathToRemove: String, context: Context) {
-      var folders = getWatchedFoldersList(context);
-      folders.remove(folderPathToRemove)
+    fun removeWatchedFolder(guid: String, context: Context) {
+      var folders = getWatchedFoldersWrapper(context);
+      folders.remove(guid)
       setWatchedFoldersList(folders, context)
     }
 
     @JvmStatic
     private fun setWatchedFoldersList(watchedFolders: WatchedFoldersBO, context: Context) {
       val editor: SharedPreferences.Editor = getStore(context).edit()
-      editor.putString(KEY_WATCHED_FOLDERS, watchedFolders.toString())
+      editor.putString(KEY_WATCHED_FOLDERS, watchedFolders.toJSON())
       editor.commit()
     }
 
     @JvmStatic
-    private fun getWatchedFoldersList(context: Context): WatchedFoldersBO {
+    private fun getWatchedFoldersWrapper(context: Context): WatchedFoldersBO {
       val value = getStore(context).getString(KEY_WATCHED_FOLDERS, "")
       return WatchedFoldersBO(value!!)
     }
